@@ -61,13 +61,13 @@ For using public holidays on leaves:
 #. If no leave type is yet specified, then default configuration is to exclude
    public holidays.
 #. The number of days will be computed excluding public holidays that match the
-   selected employee, including global, country and state holidays.
+   selected employee, including global, country state and city holidays.
 #. If no employee is yet selected, only global holidays will be taken into
    account.
 
 In calendar views in HR holiday app public will be display
-(likes other unusual days) according the current user employee country/state. If not set
-the there is a fallback to the current company country/state to filter public holidays.
+(likes other unusual days) according the current user employee country/state/city. If not set
+the there is a fallback to the current company country/state/city to filter public holidays.
 
 Known issues / Roadmap
 ======================

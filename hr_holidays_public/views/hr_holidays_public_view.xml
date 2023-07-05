@@ -38,6 +38,11 @@
                                 widget="many2many_tags"
                                 domain="[('country_id','=',parent.country_id)]"
                             />
+                            <field
+                                name="city_ids"
+                                widget="many2many_tags"
+                                domain="[('country_id','=',parent.country_id), ('state_id', 'in', state_ids)]"
+                            />
                             <field name="variable_date" />
                         </tree>
                     </field>

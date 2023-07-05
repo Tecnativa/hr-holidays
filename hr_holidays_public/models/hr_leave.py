@@ -71,6 +71,7 @@ class HrLeave(models.Model):
                     ("year_id.country_id", "=", country_id),
                 ]
             )
+        # state domain
         state_id = self.env.user.employee_id.address_id.state_id.id
         if not state_id:
             state_id = self.env.company.state_id.id or False
@@ -80,6 +81,18 @@ class HrLeave(models.Model):
                     "|",
                     ("state_ids", "in", [state_id]),
                     ("state_ids", "=", False),
+                ]
+            )
+        # city domain
+        city_id = self.env.user.employee_id.address_id.city_id.id
+        if not city_id:
+            city_id = self.env.company.partner_id.city_id.id or False
+        if city_id:
+            domain.extend(
+                [
+                    "|",
+                    ("city_ids", "in", [city_id]),
+                    ("city_ids", "=", False),
                 ]
             )
 

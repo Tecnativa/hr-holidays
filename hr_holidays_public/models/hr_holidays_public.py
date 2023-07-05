@@ -140,9 +140,16 @@ class HrHolidaysPublicLine(models.Model):
         "state_id",
         "Related States",
     )
+    city_ids = fields.Many2many(
+        "res.city",
+        "hr_holiday_public_city_rel",
+        "line_id",
+        "city_id",
+        "Related Cities",
+    )
     meeting_id = fields.Many2one("calendar.event", string="Meeting", copy=False)
 
-    @api.constrains("date", "state_ids")
+    @api.constrains("date", "state_ids", "city_ids")
     def _check_date_state(self):
         for line in self:
             line._check_date_state_one()
@@ -163,6 +170,8 @@ class HrHolidaysPublicLine(models.Model):
                 ("state_ids", "!=", False),
                 ("id", "!=", self.id),
             ]
+            if self.city_ids:
+                domain += [("city_ids", "!=", False)]
             holidays = self.search(domain)
 
             for holiday in holidays:
@@ -179,6 +188,7 @@ class HrHolidaysPublicLine(models.Model):
             ("date", "=", self.date),
             ("year_id", "=", self.year_id.id),
             ("state_ids", "=", False),
+            ("city_ids", "=", False),
         ]
         if self.search_count(domain) > 1:
             raise ValidationError(
@@ -189,13 +199,16 @@ class HrHolidaysPublicLine(models.Model):
     def _prepare_holidays_meeting_values(self):
         self.ensure_one()
         categ_id = self.env.ref("hr_holidays_public.event_type_holiday", False)
+        description = ", ".join(self.state_ids.mapped("name"))
+        if self.city_ids:
+            description += ": " + ", ".join(self.city_ids.mapped("name"))
         meeting_values = {
             "name": (
                 "{} ({})".format(self.name, self.year_id.country_id.name)
                 if self.year_id.country_id
                 else self.name
             ),
-            "description": ", ".join(self.state_ids.mapped("name")),
+            "description": description,
             "start": self.date,
             "stop": self.date,
             "allday": True,
@@ -207,7 +220,7 @@ class HrHolidaysPublicLine(models.Model):
             meeting_values.update({"categ_ids": [(6, 0, categ_id.ids)]})
         return meeting_values
 
-    @api.constrains("date", "name", "year_id", "state_ids")
+    @api.constrains("date", "name", "year_id", "state_ids", "city_ids")
     def _update_calendar_event(self):
         for rec in self:
             if rec.meeting_id:

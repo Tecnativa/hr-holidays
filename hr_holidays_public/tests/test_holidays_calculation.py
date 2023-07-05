@@ -43,11 +43,19 @@ class TestHolidaysComputeDaysBase(TransactionCase):
         cls.address_1 = cls.env["res.partner"].create(
             {"name": "Address 1", "country_id": cls.env.ref("base.uk").id}
         )
+        cls.es_city_a = cls.env["res.city"].create(
+            {
+                "name": "Test city A",
+                "state_id": cls.env.ref("base.state_es_cr").id,
+                "country_id": cls.env.ref("base.es").id,
+            }
+        )
         cls.address_2 = cls.env["res.partner"].create(
             {
                 "name": "Address 1",
                 "country_id": cls.env.ref("base.es").id,
                 "state_id": cls.env.ref("base.state_es_cr").id,
+                "city_id": cls.es_city_a.id,
             }
         )
         cls.employee_1 = cls.env["hr.employee"].create(
@@ -84,6 +92,7 @@ class TestHolidaysComputeDaysBase(TransactionCase):
                             "name": "Even More Before Christmas",
                             "date": "1946-12-23",
                             "state_ids": [(6, 0, cls.address_2.state_id.ids)],
+                            "city_ids": [(6, 0, cls.address_2.city_id.ids)],
                         },
                     ),
                 ],
