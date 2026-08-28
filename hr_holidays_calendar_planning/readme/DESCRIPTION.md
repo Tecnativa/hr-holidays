@@ -1,0 +1,2 @@
+Compatibility of hr_employee_calendar_planning with hr_holidays
+
