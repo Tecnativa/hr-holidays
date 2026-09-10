@@ -16,7 +16,7 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
         cls.leave_tye = cls.env["hr.leave.type"].create(
             {
                 "name": "Test type A",
-                "requires_allocation": "no",
+                "requires_allocation": False,
                 "request_unit": "hour",
             }
         )
@@ -24,11 +24,13 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
 
     @mute_logger("odoo.models.unlink")
     def test_hr_leave_misc_flexible_hours_request_unit_half(self):
+        self.leave_tye.request_unit = "half_day"
         self.calendar1.write(
             {
                 "stored_flexible_hours": True,
                 "stored_full_time_required_hours": 40,
                 "stored_hours_per_day": 8,
+                "stored_hours_per_week": 40,
             }
         )
         self.calendar2.write(
@@ -36,6 +38,7 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 "stored_flexible_hours": True,
                 "stored_full_time_required_hours": 20,
                 "stored_hours_per_day": 4,
+                "stored_hours_per_week": 20,
             }
         )
         self.employee.calendar_ids = [Command.clear()] + [
@@ -56,9 +59,11 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 default_holiday_status_id=self.leave_tye.id,
                 default_request_date_from="2025-01-01",
                 default_request_date_to="2025-01-01",
-                default_request_unit_half=True,
+                default_request_date_from_period="am",
+                default_request_date_to_period="am",
             )
         )
+        leave_2025 = leave_2025.save()
         self.assertEqual(leave_2025.number_of_hours, 4.0)
         self.assertEqual(leave_2025.date_from.hour, 8)
         self.assertEqual(leave_2025.date_to.hour, 12)
@@ -68,9 +73,11 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 default_holiday_status_id=self.leave_tye.id,
                 default_request_date_from="2026-01-01",
                 default_request_date_to="2026-01-01",
-                default_request_unit_half=True,
+                default_request_date_from_period="am",
+                default_request_date_to_period="am",
             )
         )
+        leave_2026 = leave_2026.save()
         self.assertEqual(leave_2026.number_of_hours, 2.0)
         self.assertEqual(leave_2026.date_from.hour, 10)
         self.assertEqual(leave_2026.date_to.hour, 12)
@@ -80,9 +87,11 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 default_holiday_status_id=self.leave_tye.id,
                 default_request_date_from="2024-12-30",
                 default_request_date_to="2024-12-30",
-                default_request_unit_half=True,
+                default_request_date_from_period="am",
+                default_request_date_to_period="am",
             )
         )
+        leave_2024 = leave_2024.save()
         self.assertEqual(leave_2024.number_of_hours, 0)
         self.assertEqual(leave_2024.date_from.hour, 0)
         self.assertEqual(leave_2024.date_to.hour, 0)
@@ -94,6 +103,7 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 "stored_flexible_hours": True,
                 "stored_full_time_required_hours": 40,
                 "stored_hours_per_day": 8,
+                "stored_hours_per_week": 40,
             }
         )
         self.calendar2.write(
@@ -101,6 +111,7 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 "stored_flexible_hours": True,
                 "stored_full_time_required_hours": 20,
                 "stored_hours_per_day": 4,
+                "stored_hours_per_week": 20,
             }
         )
         self.employee.calendar_ids = [Command.clear()] + [
@@ -123,6 +134,7 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 default_request_date_to="2025-01-01",
             )
         )
+        leave_2025 = leave_2025.save()
         self.assertEqual(leave_2025.number_of_hours, 8.0)
         self.assertEqual(leave_2025.date_from.hour, 8)
         self.assertEqual(leave_2025.date_to.hour, 16)
@@ -134,6 +146,7 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 default_request_date_to="2026-01-01",
             )
         )
+        leave_2026 = leave_2026.save()
         self.assertEqual(leave_2026.number_of_hours, 4.0)
         self.assertEqual(leave_2026.date_from.hour, 10)
         self.assertEqual(leave_2026.date_to.hour, 14)
@@ -145,6 +158,7 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 default_request_date_to="2024-12-30",
             )
         )
+        leave_2024 = leave_2024.save()
         self.assertEqual(leave_2024.number_of_hours, 0)
         self.assertEqual(leave_2024.date_from.hour, 0)
         self.assertEqual(leave_2024.date_to.hour, 0)
@@ -156,6 +170,7 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 "stored_flexible_hours": True,
                 "stored_full_time_required_hours": 40,
                 "stored_hours_per_day": 8,
+                "stored_hours_per_week": 40,
             }
         )
         self.calendar2.write(
@@ -163,6 +178,7 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 "stored_flexible_hours": True,
                 "stored_full_time_required_hours": 20,
                 "stored_hours_per_day": 4,
+                "stored_hours_per_week": 20,
             }
         )
         self.employee.calendar_ids = [Command.clear()] + [
@@ -183,11 +199,11 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 default_holiday_status_id=self.leave_tye.id,
                 default_request_date_from="2025-01-01",
                 default_request_date_to="2025-01-01",
-                default_request_unit_hours=True,
-                default_request_hour_from=11,
-                default_request_hour_to=12,
             )
         )
+        leave_2025.request_hour_from = 11
+        leave_2025.request_hour_to = 12
+        leave_2025 = leave_2025.save()
         self.assertEqual(leave_2025.number_of_hours, 1.0)
         leave_2026 = Form(
             self.env["hr.leave"].with_context(
@@ -195,11 +211,11 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 default_holiday_status_id=self.leave_tye.id,
                 default_request_date_from="2026-01-01",
                 default_request_date_to="2026-01-01",
-                default_request_unit_hours=True,
-                default_request_hour_from=8,
-                default_request_hour_to=9,
             )
         )
+        leave_2026.request_hour_from = 8
+        leave_2026.request_hour_to = 9
+        leave_2026 = leave_2026.save()
         self.assertEqual(leave_2026.number_of_hours, 1.0)
         leave_2024 = Form(
             self.env["hr.leave"].with_context(
@@ -207,9 +223,9 @@ class TestHrHolidaysEmployeeCalendarPlanning(TestHrEmployeeCalendarPlanningCommo
                 default_holiday_status_id=self.leave_tye.id,
                 default_request_date_from="2024-12-30",
                 default_request_date_to="2024-12-30",
-                default_request_unit_hours=True,
-                default_request_hour_from=8,
-                default_request_hour_to=9,
             )
         )
-        self.assertEqual(leave_2024.number_of_hours, 0.0)
+        leave_2024.request_hour_from = 8
+        leave_2024.request_hour_to = 9
+        leave_2024 = leave_2024.save()
+        self.assertEqual(leave_2024.number_of_hours, 1)
